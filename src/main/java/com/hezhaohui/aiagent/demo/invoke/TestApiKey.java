@@ -1,4 +1,4 @@
-package java.com.hezhaohui.aiagent.demo.invoke;
+package com.hezhaohui.aiagent.demo.invoke;
 
 public interface TestApiKey {
 
