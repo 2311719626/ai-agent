@@ -1,6 +1,9 @@
 spring:
   application:
     name: ai-agent
+  ai:
+    dashscope:
+      api-key: sk-0919ddacc34e484fbe8050411ad722f4
 server:
   port: 8123
   servlet:
