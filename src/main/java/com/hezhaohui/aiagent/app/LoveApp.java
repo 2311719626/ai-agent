@@ -1,6 +1,7 @@
 package com.hezhaohui.aiagent.app;
 
 import com.hezhaohui.aiagent.advisor.MyLoggerAdvisor;
+import com.hezhaohui.aiagent.advisor.ReReadingAdvisor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -37,6 +38,8 @@ public class LoveApp {
                         new MessageChatMemoryAdvisor(chatMemory),
                         // 自定义日志拦截器 可按需开启
                         new MyLoggerAdvisor()
+                        // 自定义推理增强 Advisor 可按需开启
+//                        ,new ReReadingAdvisor()
                 )
                 .build();
     }
