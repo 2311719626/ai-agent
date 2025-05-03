@@ -1,6 +1,7 @@
 package com.hezhaohui.aiagent.app;
 
 import jakarta.annotation.Resource;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -26,5 +27,14 @@ class LoveAppTest {
         // 第三轮
         message = "我的另一半叫什么来着？刚跟你说过，帮我回忆一下";
         answer = loveApp.doChat(message,chatId);
+    }
+
+    @Test
+    void doChatWithReport() {
+        String chatId = UUID.randomUUID().toString();
+        String message = "你好我是有马公生，我的另一半是宫园薰，怎么让她和我在一起?";
+        LoveApp.LoveReport loveReport = loveApp.doChatWithReport(message,chatId);
+        Assertions.assertNotNull(loveReport);
+
     }
 }
