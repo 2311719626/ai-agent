@@ -3,13 +3,16 @@ package com.hezhaohui.aiagent.app;
 import com.hezhaohui.aiagent.advisor.MyLoggerAdvisor;
 import com.hezhaohui.aiagent.advisor.ReReadingAdvisor;
 import com.hezhaohui.aiagent.chatmemory.FileBasedChatMemory;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -30,6 +33,7 @@ public class LoveApp {
 
     /**
      * 初始化 AI 客户端
+     *
      * @param dashscopeChatModel
      */
     public LoveApp(ChatModel dashscopeChatModel) {
@@ -53,6 +57,7 @@ public class LoveApp {
 
     /**
      * AI 基础对话（支持多轮对话记忆）
+     *
      * @param message
      * @param chatId
      * @return
@@ -61,27 +66,29 @@ public class LoveApp {
         ChatResponse chatResponse = chatClient
                 .prompt()
                 .user(message)
-                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY,chatId)
-                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY,10))
+                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
+                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
                 .call()
                 .chatResponse();
 
         String content = chatResponse.getResult().getOutput().getText();
-        log.info("\n ===== 🎉content🎉===== \n {}",content);
+        log.info("\n ===== 🎉content🎉===== \n {}", content);
         return content;
     }
 
     /**
      * 报告记录类
-     * @param title 报告名
+     *
+     * @param title       报告名
      * @param suggestions 建议列表
      */
     record LoveReport(String title, List<String> suggestions) {
-        
+
     }
 
     /**
      * AI 恋爱报告（结构化输出）
+     *
      * @param message
      * @param chatId
      * @return
@@ -91,12 +98,39 @@ public class LoveApp {
                 .prompt()
                 .system(SYSTEM_PROMPT + "每次对话后都要生成结果，标题为{用户名}的恋爱报告，内容为建议列表。")
                 .user(message)
-                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY,chatId)
-                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY,10))
+                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
+                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
                 .call()
                 .entity(LoveReport.class);
 
-        log.info("loveReport: {}",loveReport);
+        log.info("loveReport: {}", loveReport);
         return loveReport;
+    }
+
+    // 知识库功能
+    @Resource
+    private VectorStore loveAppVectorStore;
+
+    /**
+     * RAG 对话
+     *
+     * @param message
+     * @param chatId
+     * @return
+     */
+    public String doChatWithRag(String message, String chatId) {
+        ChatResponse chatResponse = chatClient
+                .prompt()
+                .user(message)
+                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
+                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
+//                .advisors(new MyLoggerAdvisor())
+                .advisors(new QuestionAnswerAdvisor(loveAppVectorStore))
+                .call()
+                .chatResponse();
+
+        String content = chatResponse.getResult().getOutput().getText();
+        log.info("\n ===== 🎉content🎉===== \n {}", content);
+        return content;
     }
 }
