@@ -4,6 +4,18 @@ spring:
   ai:
     dashscope:
       api-key: sk-0919ddacc34e484fbe8050411ad722f4
+#    vectorstore:
+#      pgvector:
+#        index-type: HNSW
+#        distance-type: COSINE_DISTANCE
+#        dimensions: 1536
+#        max-document-batch-size: 10000 # Optional: Maximum number of documents per batch
+  datasource:
+    url: jdbc:postgresql://pgm-bp1216n0nwzus24two.rwlb.rds.aliyuncs.com/ai-agent
+    username: hzh
+    password: Dn293830
+
+
 server:
   port: 8123
   servlet:

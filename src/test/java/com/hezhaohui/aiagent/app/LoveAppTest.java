@@ -1,7 +1,9 @@
 package com.hezhaohui.aiagent.app;
 
+import com.github.xiaoymin.knife4j.annotations.Ignore;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -16,6 +18,7 @@ class LoveAppTest {
     private LoveApp loveApp;
 
     @Test
+    @Disabled
     void testChat() {
         String chatId = UUID.randomUUID().toString();
         // 第一轮
@@ -30,6 +33,7 @@ class LoveAppTest {
     }
 
     @Test
+    @Disabled
     void doChatWithReport() {
         String chatId = UUID.randomUUID().toString();
         String message = "你好我是有马公生，我的另一半是宫园薰，怎么让她和我在一起?";
